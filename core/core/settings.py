@@ -38,13 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Chapter 3 added apps
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
+    'django.contrib.postgres',
+    'taggit',
 ]
 
 EXTERNAL_APPS = [
     'blog.apps.BlogConfig',
 ]
 
-INSTALLED_APPS+=EXTERNAL_APPS
+INSTALLED_APPS += EXTERNAL_APPS
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,6 +92,16 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if config('DB_ENGINE', default='') == 'postgresql':
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='blog'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default='postgres'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+    }
 
 
 # Password validation
