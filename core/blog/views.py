@@ -62,6 +62,7 @@ def post_details(request, year, month, day, post):
 def post_share(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     sent = False
+    sent_to = None
 
     if request.method == 'POST':
         form = EmailPostForm(request.POST)
@@ -80,19 +81,28 @@ def post_share(request, post_id):
                 recipient_list=[cd['to']],
             )
             sent = True
+            sent_to = cd['to']
     else:
         form = EmailPostForm()
-    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
-
+    return render(
+        request,
+        'blog/post/share.html',
+        {'post': post, 'form': form, 'sent': sent, 'sent_to': sent_to},
+    )
 @require_POST
 def post_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
     form = CommentForm(data=request.POST)
+    comment = None
     if form.is_valid():
         comment = form.save(commit=False)
         comment.post = post
         comment.save()
-    return render(request, 'blog/post/comment.html', {'post': post, 'form': form})
+    return render(
+        request,
+        'blog/post/comment.html',
+        {'post': post, 'form': form, 'comment': comment},
+    )
 
 def post_search(request):
     form = SearchForm()
